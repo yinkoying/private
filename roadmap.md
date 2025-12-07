@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Career Roadmap: Sustainability x Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 自訂字型與背景 */
+        body {
+            background-color: #f8fafc; /* Tailwind 'slate-50' */
+            font-family: 'Inter', system-ui, -apple-system, "Microsoft JhengHei", sans-serif;
+        }
+        
+        /* 互動效果 */
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        .toggle-icon.rotated {
+            transform: rotate(-90deg);
+        }
+
+        /* 網格系統 */
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 平板 (md) */
+        @media (min-width: 768px) {
+            .milestone-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* 電腦 (lg) - 調整為 3 欄以配合剩下的 3 個階段 */
+        @media (min-width: 1024px) {
+            .milestone-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* 卡片樣式 */
+        .milestone-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .milestone-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        /* 時間標籤 */
+        .time-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        
+        /* 標題與內文 */
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+        .card-desc {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #4b5563; /* gray-600 */
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-10">
+
+    <div class="max-w-[1400px] mx-auto">
+        <div class="text-center bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-10 mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">
+                Career Roadmap <span class="text-emerald-600">2025–2030</span>
+            </h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+                雙軌整合：從「永續合規揭露」到「永續金融價值創造」
+            </p>
+        </div>
+
+        <div class="space-y-8">
+
+            <!-- Track 1: Career (Reporting) -->
+            <section class="track-container">
+                <div class="track-header flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors" data-track="career">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-2 bg-emerald-100 rounded-lg">
+                            <i data-lucide="book-open" class="w-6 h-6 text-emerald-700"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">永續報告與揭露</h2>
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Reporting & Compliance</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 toggle-icon"></i>
+                </div>
+                
+                <div class="milestone-grid mt-4 track-content" id="career-content">
+                    <!-- Removed Internship Block -->
+                    
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                        <div>
+                            <span class="time-tag bg-emerald-50 text-emerald-700">1 年內</span>
+                            <h3 class="card-title text-slate-800">集團資訊整合</h3>
+                            <p class="card-desc">執行企業的資訊蒐集與整合，編撰符合國際標準的永續報告書。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                        <div>
+                            <span class="time-tag bg-emerald-100 text-emerald-800">1 - 3 年</span>
+                            <h3 class="card-title text-slate-800">供應鏈與評比</h3>
+                            <p class="card-desc">優化供應鏈數據管理，並針對 DJSI、MSCI 等國際評比進行差異分析與績效提升。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                        <div>
+                            <span class="time-tag bg-emerald-600 text-white">3 - 5 年</span>
+                            <h3 class="card-title text-slate-800">永續策略幕僚</h3>
+                            <p class="card-desc">不僅是揭露，更能向管理層提供基於數據的策略建議，協助企業規避新興風險。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Track 2: Finance -->
+            <section class="track-container">
+                <div class="track-header flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors" data-track="finance">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i data-lucide="landmark" class="w-6 h-6 text-blue-700"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">永續金融與數據管理</h2>
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Sustainable Finance & Data</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 toggle-icon"></i>
+                </div>
+
+                <div class="milestone-grid mt-4 track-content" id="finance-content">
+                    <!-- Removed Internship Block -->
+
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <div>
+                            <span class="time-tag bg-blue-50 text-blue-700">1 年內</span>
+                            <h3 class="card-title text-slate-800">ESG 資訊架構建立</h3>
+                            <p class="card-desc">協助建置 ESG 資訊蒐集與管理機制，對接 IFRS S1/S2 要求，確保年報中非財務資訊的準確揭露。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <div>
+                            <span class="time-tag bg-blue-100 text-blue-800">1 - 3 年</span>
+                            <h3 class="card-title text-slate-800">資本市場溝通</h3>
+                            <p class="card-desc">對接國內外信評機構與外資法人，協助銀行授信溝通，確保綠色融資優勢。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <div>
+                            <span class="time-tag bg-blue-600 text-white">3 - 5 年</span>
+                            <h3 class="card-title text-slate-800">財務實質性分析</h3>
+                            <p class="card-desc">量化氣候風險的財務影響，為企業併購或投資提供 ESG 價值評估與分析。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Track 3: Growth (Integration) -->
+            <section class="track-container">
+                <div class="track-header flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors" data-track="growth">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <i data-lucide="cpu" class="w-6 h-6 text-purple-700"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">跨域整合與創新</h2>
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Integration & Innovation</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 toggle-icon"></i>
+                </div>
+
+                <div class="milestone-grid mt-4 track-content" id="growth-content">
+                    <!-- Removed Internship Block -->
+
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-400">
+                        <div>
+                            <span class="time-tag bg-purple-50 text-purple-700">1 年內</span>
+                            <h3 class="card-title text-slate-800">數位工具輔助</h3>
+                            <p class="card-desc">利用 AI 輔助金融市場分析與法規比對，加速資料蒐集，將時間投入於高價值分析。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-400">
+                        <div>
+                            <span class="time-tag bg-purple-100 text-purple-800">1 - 3 年</span>
+                            <h3 class="card-title text-slate-800">學術與專業深造</h3>
+                            <p class="card-desc">進修北大/中央碩士在職學程，強化「綠色金融」與「碳管理」理論，考取 ESG 相關證照。</p>
+                        </div>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-400">
+                        <div>
+                            <span class="time-tag bg-purple-500 text-white">3 - 5 年</span>
+                            <h3 class="card-title text-slate-800">整合性思維領導</h3>
+                            <p class="card-desc">打破財務與永續部門藩籬，推動「整合性報告」思維，創造企業綜效。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div> 
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
+            lucide.createIcons();
+
+            const headers = document.querySelectorAll('.track-header');
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const trackName = header.dataset.track;
+                    const content = document.getElementById(`${trackName}-content`);
+                    const icon = header.querySelector('.toggle-icon');
+
+                    // 簡單的 Toggle 邏輯
+                    if (content.style.display === 'none') {
+                        content.style.display = 'grid'; // 恢復 Grid 排版
+                        icon.classList.remove('rotated');
+                    } else {
+                        content.style.display = 'none'; // 隱藏
+                        icon.classList.add('rotated');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
