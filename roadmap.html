@@ -7,6 +7,8 @@
     <title>Career Roadmap: Sustainability x Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 引入 html2canvas 用於截圖 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* 自訂字型與背景 */
         body {
@@ -89,9 +91,17 @@
     </style>
 </head>
 
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-10 relative">
 
-    <div class="max-w-[1400px] mx-auto">
+    <!-- 下載按鈕 (固定在右下角或是頂部) -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
+        <button onclick="downloadImage()" class="flex items-center gap-2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-lg hover:bg-slate-700 transition-all font-bold">
+            <i data-lucide="camera" class="w-5 h-5"></i>
+            下載圖片
+        </button>
+    </div>
+
+    <div id="capture-area" class="max-w-[1400px] mx-auto bg-[#f8fafc] p-4"> <!-- 增加背景色確保截圖正常 -->
         <div class="text-center bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-10 mb-10">
             <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">
                 Career Roadmap <span class="text-emerald-600">2025–2030</span>
@@ -119,7 +129,6 @@
                 </div>
                 
                 <div class="milestone-grid mt-4 track-content" id="career-content">
-                    <!-- Removed Internship Block -->
                     
                     <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
                         <div>
@@ -161,7 +170,6 @@
                 </div>
 
                 <div class="milestone-grid mt-4 track-content" id="finance-content">
-                    <!-- Removed Internship Block -->
 
                     <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
                         <div>
@@ -203,7 +211,6 @@
                 </div>
 
                 <div class="milestone-grid mt-4 track-content" id="growth-content">
-                    <!-- Removed Internship Block -->
 
                     <div class="milestone-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-400">
                         <div>
@@ -255,6 +262,32 @@
                 });
             });
         });
+
+        // 下載圖片功能
+        function downloadImage() {
+            // 1. 強制展開所有區塊以確保截圖完整
+            const allContents = document.querySelectorAll('.track-content');
+            const allIcons = document.querySelectorAll('.toggle-icon');
+            
+            // 暫存目前的顯示狀態 (如果想截圖後恢復)
+            // 這裡為了簡化，直接全部展開
+            allContents.forEach(el => el.style.display = 'grid');
+            allIcons.forEach(icon => icon.classList.remove('rotated'));
+
+            // 2. 截圖
+            const element = document.getElementById("capture-area");
+            
+            html2canvas(element, {
+                scale: 2, // 提高解析度
+                backgroundColor: "#f8fafc", // 確保背景色正確
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'career-roadmap.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
     </script>
 </body>
 </html>
