@@ -105,6 +105,17 @@
         const DEFAULT_QUESTIONS = [
             {
                 id: 1715424000000,
+                level: "初級",
+                subject: "考科一：淨零碳規劃管理基礎概論",
+                section: "淨零碳管理趨勢與政策",
+                topic: "全球氣候變遷與國際公約",
+                question: "下列哪一個國際公約的主要目標是控制全球平均氣溫升幅在工業化前水準的2°C以內，並努力限制在1.5°C以內？",
+                options: ["京都議定書", "蒙特婁議定書", "巴黎協定", "里約宣言"],
+                correctAnswer: "巴黎協定",
+                explanation: "巴黎協定(Paris Agreement)於2015年通過，其核心目標即為將全球升溫控制在2°C以內，並致力於限制在1.5°C。"
+            },
+            {
+                id: 1715424000001,
                 level: "中級",
                 subject: "考科二：碳管理制度實務",
                 section: "組織自願減量實務",
@@ -151,7 +162,7 @@
         function ExamSystem() {
           const [questions, setQuestions] = useState(() => {
             try { 
-                const saved = JSON.parse(localStorage.getItem('myExamBank_v2'));
+                const saved = JSON.parse(localStorage.getItem('myExamBank_v3'));
                 if (!saved) return DEFAULT_QUESTIONS;
                 return saved.map(q => { 
                     if (q.level) return q;
@@ -161,7 +172,7 @@
             } catch { return DEFAULT_QUESTIONS; }
           });
           const [wrongBank, setWrongBank] = useState(() => {
-             try { return JSON.parse(localStorage.getItem('myWrongBank_v2')) || []; } catch { return []; }
+             try { return JSON.parse(localStorage.getItem('myWrongBank_v3')) || []; } catch { return []; }
           });
           const [stats, setStats] = useState(() => {
              try { return JSON.parse(localStorage.getItem('myExamStats')) || {}; } catch { return {}; }
@@ -188,8 +199,8 @@
           const [timer, setTimer] = useState(0);
           const timerRef = useRef(null);
 
-          useEffect(() => { localStorage.setItem('myExamBank_v2', JSON.stringify(questions)); }, [questions]);
-          useEffect(() => { localStorage.setItem('myWrongBank_v2', JSON.stringify(wrongBank)); }, [wrongBank]);
+          useEffect(() => { localStorage.setItem('myExamBank_v3', JSON.stringify(questions)); }, [questions]);
+          useEffect(() => { localStorage.setItem('myWrongBank_v3', JSON.stringify(wrongBank)); }, [wrongBank]);
           useEffect(() => { localStorage.setItem('myExamStats', JSON.stringify(stats)); }, [stats]);
 
           const showNotify = (msg, type = 'success') => {
@@ -265,11 +276,16 @@
               if (!ans) return [];
               if (Array.isArray(ans)) return ans.map(String).sort();
               
-              const parts = String(ans).split(/[,，、]/).map(s => s.trim()).filter(s => s);
+              const ansStr = String(ans).trim();
+              if (q.options.some(opt => String(opt).trim() === ansStr)) {
+                  return [ansStr];
+              }
+              
+              const parts = ansStr.split(/[,，、]/).map(s => s.trim()).filter(s => s);
               
               return parts.map(p => {
                   const upper = p.toUpperCase();
-                  if (['A','B','C','D'].includes(upper)) {
+                  if (['A','B','C','D','E'].includes(upper)) {
                       const idx = upper.charCodeAt(0) - 65;
                       return q.options[idx] || p;
                   }
@@ -309,7 +325,7 @@
               } else {
                   specificInst = "題目類型以「單選題」為主，著重基本定義與規範理解。";
               }
-              const promptText = `請幫我出 5 題 iPAS 淨零碳規劃管理師「${level}」的模擬試題。\n\n考科範圍與細項如下：${syllabusStr}\n\n${specificInst}\n\n※ 模擬試題僅供參考，非正式考題內容。\n\n請嚴格遵守以下 JSON 格式回傳，直接給出 JSON 陣列，不要有 Markdown code block (例如 \`\`\`json)，也不要其他文字：\n[\n  {\n    "level": "${level}",\n    "subject": "科目名稱",\n    "section": "章節",\n    "topic": "細項",\n    "question": "題目敘述 (複選)",\n    "options": ["選項1", "選項2", "選項3", "選項4"],\n    "correctAnswer": "選項1, 選項2",\n    "explanation": "詳解"\n  }\n]`;
+              const promptText = `請幫我出 10 題 iPAS 淨零碳規劃管理師「${level}」的模擬試題。\n\n考科範圍與細項如下：${syllabusStr}\n\n${specificInst}\n\n※ 模擬試題僅供參考，非正式考題內容。\n\n請嚴格遵守以下 JSON 格式回傳，直接給出 JSON 陣列，不要有 Markdown code block (例如 \`\`\`json)，也不要其他文字：\n[\n  {\n    "level": "${level}",\n    "subject": "科目名稱",\n    "section": "章節",\n    "topic": "細項",\n    "question": "題目敘述 (複選)",\n    "options": ["選項1", "選項2", "選項3", "選項4"],\n    "correctAnswer": "選項1, 選項2",\n    "explanation": "詳解"\n  }\n]`;
               
               const el = document.createElement('textarea');
               el.value = promptText;
