@@ -36,6 +36,11 @@
         const EXAM_DATA = {
             "初級": {
                 theme: "green",
+                info: {
+                    time: "每科 75 分鐘",
+                    format: "電腦測驗，每科各單選 50 題",
+                    passing: "同時報考2科，平均70分且單科不低於60分；或單科及格保留（70分）。"
+                },
                 subjects: {
                     "考科一：淨零碳規劃管理基礎概論": {
                         "淨零碳管理趨勢與政策": ["全球氣候變遷與國際公約", "CBAM與國際碳管制趨勢", "我國氣候變遷因應法與相關政策", "企業ESG與永續發展"],
@@ -45,11 +50,15 @@
                         "組織型溫室氣體盤查": ["ISO 14064-1 標準解析", "邊界設定與排放源鑑別", "量化計算方法", "盤查報告書架構"],
                         "產品碳足跡盤查": ["ISO 14067 標準解析", "生命週期評估(LCA)基礎", "產品類別規則(PCR)", "碳標籤制度"]
                     }
-                },
-                passing: "同時報考2科，平均70分且單科不低於60分；或單科及格保留（70分）。"
+                }
             },
             "中級": {
                 theme: "blue",
+                info: {
+                    time: "每科 90 分鐘",
+                    format: "電腦測驗，每科各單、複選+情境題 (共50題)",
+                    passing: "兩科皆達 70 分。"
+                },
                 subjects: {
                     "考科一：節能減碳技術實務": {
                         "組織節能減碳策略": ["減碳/節能目標設定與路徑規劃", "碳排熱區辨識與能源盤查資料解析", "財務決策模型與風險評估"],
@@ -61,8 +70,7 @@
                         "組織自願減量實務": ["國內外自願減量專案與抵換制度", "碳移除與負碳技術", "碳抵換與碳資源交易", "內部碳定價與碳資產管理"],
                         "永續供應鏈管理": ["範疇三碳排數據盤查與估算實務", "供應鏈減碳風險評估與管理機制"]
                     }
-                },
-                passing: "兩科皆達 70 分。"
+                }
             }
         };
 
@@ -115,7 +123,6 @@
                 blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', marker: 'bg-blue-400' }
             };
             const theme = themeColors[color] || themeColors.blue;
-
             return (
                 <div className={`mb-3 rounded-lg border ${theme.border} overflow-hidden`}>
                     <button onClick={() => setIsOpen(!isOpen)} className={`w-full text-left p-3 ${theme.bg} ${theme.text} font-bold text-sm flex justify-between items-center transition-colors hover:opacity-90`}>
@@ -159,7 +166,6 @@
           const [stats, setStats] = useState(() => {
              try { return JSON.parse(localStorage.getItem('myExamStats')) || {}; } catch { return {}; }
           });
-
           const [activeTab, setActiveTab] = useState('intro');
           const [notification, setNotification] = useState(null);
           const [helperOpen, setHelperOpen] = useState(false);
@@ -169,11 +175,8 @@
           const [isEditMode, setIsEditMode] = useState(false);
           const [editId, setEditId] = useState(null);
           const [showEditModal, setShowEditModal] = useState(false);
-
           const [jsonInput, setJsonInput] = useState('');
-
           const [bankFilter, setBankFilter] = useState({ keyword: '', level: 'all', subject: 'all' });
-
           const [bulkPreview, setBulkPreview] = useState([]);
           const [quizConfig, setQuizConfig] = useState({ level: '中級', subject: 'all', mode: 'normal', count: '20' });
           const [currentQuiz, setCurrentQuiz] = useState([]);
@@ -248,9 +251,7 @@
                       id: Date.now() + i,
                       level: q.level || "中級"
                   }));
-
                   if (validQuestions.length === 0) throw new Error("無有效題目");
-
                   setQuestions([...questions, ...validQuestions]);
                   setJsonInput('');
                   showNotify(`成功匯入 ${validQuestions.length} 題 JSON 題庫`);
@@ -261,24 +262,26 @@
 
           const normalizeAnswer = (q) => {
               const ans = q.correctAnswer;
+              if (!ans) return [];
               if (Array.isArray(ans)) return ans.map(String).sort();
-              if (typeof ans !== 'string') return [String(ans)];
               
-              if (ans.includes('選項')) {
-                  const indices = ans.match(/選項(\d+)/g)?.map(s => parseInt(s.replace('選項','')) - 1) || [];
-                  return indices.map(i => q.options[i]).filter(Boolean).sort();
-              }
-              if (ans.includes(',')) {
-                  const splitAns = ans.split(/[,，、]/).map(s => s.trim());
-                  return splitAns.map(s => {
-                      if (['A','B','C','D'].includes(s.toUpperCase())) {
-                          const idx = s.toUpperCase().charCodeAt(0) - 65;
-                          return q.options[idx];
-                      }
-                      return s;
-                  }).filter(Boolean).sort();
-              }
-              return [ans.trim()];
+              const parts = String(ans).split(/[,，、]/).map(s => s.trim()).filter(s => s);
+              
+              return parts.map(p => {
+                  const upper = p.toUpperCase();
+                  if (['A','B','C','D'].includes(upper)) {
+                      const idx = upper.charCodeAt(0) - 65;
+                      return q.options[idx] || p;
+                  }
+                  
+                  const optMatch = p.match(/^選項(\d+)$/);
+                  if (optMatch) {
+                      const idx = parseInt(optMatch[1]) - 1;
+                      return q.options[idx] || p;
+                  }
+                  
+                  return p;
+              }).sort();
           };
 
           const checkIsCorrect = (q, userAns) => {
@@ -293,7 +296,6 @@
           const copyAiPrompt = (level) => {
               const data = EXAM_DATA[level];
               if (!data) return;
-
               let syllabusStr = "";
               Object.entries(data.subjects).forEach(([subject, chapters]) => {
                   syllabusStr += `\n【${subject}】包含：`;
@@ -301,14 +303,12 @@
                       syllabusStr += `${chapter}(${details.join('、')})、`;
                   });
               });
-
               let specificInst = "";
               if (level === '中級') {
                   specificInst = "題目類型請包含「單選題」、「複選題」以及「情境題」(Scenario-based, 包含題幹描述)。若是複選題，請在題目後方標註「(複選)」，並確保 correctAnswer 格式為「選項1, 選項2...」之類的形式。情境題請將情境描述寫在 'question' 欄位中。";
               } else {
                   specificInst = "題目類型以「單選題」為主，著重基本定義與規範理解。";
               }
-
               const promptText = `請幫我出 5 題 iPAS 淨零碳規劃管理師「${level}」的模擬試題。\n\n考科範圍與細項如下：${syllabusStr}\n\n${specificInst}\n\n※ 模擬試題僅供參考，非正式考題內容。\n\n請嚴格遵守以下 JSON 格式回傳，直接給出 JSON 陣列，不要有 Markdown code block (例如 \`\`\`json)，也不要其他文字：\n[\n  {\n    "level": "${level}",\n    "subject": "科目名稱",\n    "section": "章節",\n    "topic": "細項",\n    "question": "題目敘述 (複選)",\n    "options": ["選項1", "選項2", "選項3", "選項4"],\n    "correctAnswer": "選項1, 選項2",\n    "explanation": "詳解"\n  }\n]`;
               
               const el = document.createElement('textarea');
@@ -331,6 +331,7 @@
              XLSX.utils.book_append_sheet(wb, ws, "題庫");
              XLSX.writeFile(wb, `iPAS_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
           };
+
           const downloadTemplate = () => {
              const headers = [['等級', '科目', '主題', '內容', '題目', 'A', 'B', 'C', 'D', '正確答案', '解析']];
              const sampleData = [['中級', '考科二：碳管理制度實務', '組織自願減量實務', '抵換制度', '範例題目...', 'A', 'B', 'C', 'D', 'A', '解析...']];
@@ -339,12 +340,14 @@
              XLSX.utils.book_append_sheet(wb, ws, "範例格式");
              XLSX.writeFile(wb, "iPAS_題庫範例.xlsx");
           };
+
           const handleExcelUpload = (e) => {
             const f = e.target.files[0]; if (!f) return;
             const r = new FileReader();
             r.onload = (evt) => {
                 try {
-                    const ws = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'}).Sheets[XLSX.read(new Uint8Array(evt.target.result), {type: 'array'}).SheetNames[0]];
+                    const workbook = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
+                    const ws = workbook.Sheets[workbook.SheetNames[0]];
                     const rows = XLSX.utils.sheet_to_json(ws, {header: 1});
                     const parsed = [];
                     rows.forEach((r, i) => {
@@ -381,14 +384,12 @@
             
             let finalQ = qList.sort(() => Math.random() - 0.5);
             if (quizConfig.count !== 'all') finalQ = finalQ.slice(0, parseInt(quizConfig.count));
-
             setCurrentQuiz(finalQ);
             setQuizIndex(0); 
             setQuizAnswers({});
             setQuizConfirmed(new Set());
             setIsQuizActive(true); 
             setActiveTab('quiz_running');
-
             if (quizConfig.mode === 'mock') {
                 setTimer(60 * 60); 
             }
@@ -407,9 +408,7 @@
               const isMulti = q.question.includes("複選") || q.correctAnswer.includes("選項") || q.correctAnswer.includes(",");
               const isMock = quizConfig.mode === 'mock';
               const confirmed = quizConfirmed.has(q.id);
-
               if (confirmed && !isMock) return; 
-
               setQuizAnswers(prev => {
                   const currentAns = prev[q.id];
                   
@@ -510,8 +509,7 @@
                     </div>
                 </div>
                 <div className="flex bg-slate-800 text-white p-1 overflow-x-auto shadow-md no-scrollbar justify-center">
-                    <button onClick={() => handleNavChange('intro')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'intro' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><Info size={18} className="mr-2"/> 簡章</button>
-                    {/* Removed Add Tab Button */}
+                    <button onClick={() => handleNavChange('intro')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'intro' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><Info size={18} className="mr-2"/> 考綱</button>
                     <button onClick={() => handleNavChange('bank')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'bank' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><BookOpen size={18} className="mr-2"/> 題庫</button>
                     <button onClick={() => handleNavChange('import')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'import' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><FolderOpen size={18} className="mr-2"/> 管理</button>
                     <button onClick={() => handleNavChange('ai_import')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'ai_import' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><Bot size={18} className="mr-2"/> AI 匯入</button>
@@ -520,31 +518,36 @@
                 </div>
                 {notification && <div className={`fixed top-24 right-4 px-6 py-3 rounded-xl shadow-2xl animate-bounce z-50 font-bold flex items-center ${notification.type === 'error' ? 'bg-red-500 text-white' : 'bg-slate-800 text-white'}`}>{notification.type === 'error' && <AlertTriangle size={18} className="mr-2"/>}{notification.msg}</div>}
               </div>
-
+              
               <div className="max-w-5xl mx-auto mt-6 px-3 sm:px-4">
-                {/* Intro Tab */}
                 {activeTab === 'intro' && (
                     <div className="animate-fade-in space-y-6 max-w-4xl mx-auto">
                         <div className="grid md:grid-cols-2 gap-6 items-start">
                             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-green-500 h-full flex flex-col">
                                 <h3 className="font-bold text-lg mb-4 text-slate-800 flex items-center"><Book size={20} className="mr-2 text-green-600"/>初級 鑑定考科</h3>
+                                <div className="mb-4 bg-green-50 p-3 rounded-lg border border-green-100 text-xs space-y-2 text-green-800">
+                                    <div className="flex items-center"><Clock size={14} className="mr-2"/> {EXAM_DATA["初級"].info.time}</div>
+                                    <div className="flex items-center"><CheckCircle size={14} className="mr-2"/> {EXAM_DATA["初級"].info.format}</div>
+                                </div>
                                 <div className="space-y-4 flex-grow">
                                     {Object.entries(EXAM_DATA["初級"].subjects).map(([title, chapters], i) => <SyllabusAccordion key={i} title={title} chapters={chapters} color="green" />)}
                                 </div>
-                                <div className="mt-6 p-4 bg-slate-50 rounded text-xs text-slate-500 border border-slate-100"><strong>及格標準：</strong> {EXAM_DATA["初級"].passing}</div>
+                                <div className="mt-6 p-4 bg-slate-50 rounded text-xs text-slate-500 border border-slate-100"><strong>及格標準：</strong> {EXAM_DATA["初級"].info.passing}</div>
                             </div>
                             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 border-t-4 border-blue-500 h-full flex flex-col">
                                 <h3 className="font-bold text-lg mb-4 text-slate-800 flex items-center"><Book size={20} className="mr-2 text-blue-600"/>中級 鑑定考科</h3>
+                                <div className="mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs space-y-2 text-blue-800">
+                                    <div className="flex items-center"><Clock size={14} className="mr-2"/> {EXAM_DATA["中級"].info.time}</div>
+                                    <div className="flex items-center"><CheckCircle size={14} className="mr-2"/> {EXAM_DATA["中級"].info.format}</div>
+                                </div>
                                 <div className="space-y-4 flex-grow">
                                     {Object.entries(EXAM_DATA["中級"].subjects).map(([title, chapters], i) => <SyllabusAccordion key={i} title={title} chapters={chapters} color="blue" />)}
                                 </div>
-                                <div className="mt-6 p-4 bg-slate-50 rounded text-xs text-slate-500 border border-slate-100"><strong>及格標準：</strong> {EXAM_DATA["中級"].passing}</div>
+                                <div className="mt-6 p-4 bg-slate-50 rounded text-xs text-slate-500 border border-slate-100"><strong>及格標準：</strong> {EXAM_DATA["中級"].info.passing}</div>
                             </div>
                         </div>
                     </div>
                 )}
-
-                {/* Bank Tab with Search & Filter */}
                 {activeTab === 'bank' && (
                    <div className="max-w-4xl mx-auto p-4 animate-fade-in">
                      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 sticky top-20 z-10">
@@ -583,8 +586,6 @@
                      </div>
                    </div>
                 )}
-
-                {/* Import Tab */}
                 {activeTab === 'import' && (
                    <div className="max-w-4xl mx-auto p-4 space-y-6 animate-fade-in">
                       <section className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -614,8 +615,6 @@
                       </section>
                    </div>
                 )}
-
-                {/* AI Import Tab */}
                 {activeTab === 'ai_import' && (
                     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg border border-slate-100 mt-6 animate-fade-in">
                         <h2 className="text-xl font-bold mb-4 text-slate-800 flex items-center"><Bot className="mr-2 text-purple-600"/> AI 快速匯入</h2>
@@ -649,8 +648,6 @@
                         </button>
                     </div>
                 )}
-
-                {/* Analysis Tab */}
                 {activeTab === 'analysis' && (
                     <div className="max-w-4xl mx-auto p-4 animate-fade-in space-y-6">
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -689,8 +686,6 @@
                         </div>
                     </div>
                 )}
-
-                {/* Quiz Prep Tab */}
                 {activeTab === 'quiz' && (
                    <div className="max-w-md mx-auto mt-10 p-8 bg-white rounded-2xl shadow-xl border border-slate-100 text-center animate-fade-in">
                       <h2 className="text-2xl font-bold mb-6 text-slate-800">測驗設定</h2>
@@ -703,7 +698,6 @@
                             ))}
                         </div>
                       </div>
-
                       <div className="mb-4 text-left">
                           <label className="block text-xs font-bold text-slate-400 mb-1">科目</label>
                           <select className="w-full p-2 border border-slate-200 rounded-lg outline-none bg-white text-sm" value={quizConfig.subject} onChange={e=>setQuizConfig({...quizConfig, subject: e.target.value})}>
@@ -711,7 +705,6 @@
                               {getSubjects(quizConfig.level).map(s=><option key={s} value={s}>{s}</option>)}
                           </select>
                       </div>
-
                       <div className="grid grid-cols-2 gap-4 mb-6 text-left">
                           <div>
                               <label className="block text-xs font-bold text-slate-400 mb-1">模式</label>
@@ -760,7 +753,6 @@
                    const mins = Math.floor(timer / 60);
                    const secs = timer % 60;
                    const timeStr = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-
                    return (
                      <div className="relative">
                        {isMock && (
@@ -768,12 +760,10 @@
                                <Clock size={16} className="mr-2"/> {timeStr}
                            </div>
                        )}
-
                        <div className="fixed top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 right-4 lg:right-auto lg:left-1/2 lg:ml-[26rem]">
                           <button onClick={() => setQuizIndex(i => Math.max(0, i - 1))} disabled={quizIndex === 0} className={`p-3 rounded-full shadow-lg transition-transform hover:scale-110 flex flex-col items-center justify-center gap-1 ${quizIndex === 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-white text-slate-700 hover:text-blue-600 border border-slate-200'}`}><ChevronUp size={20} /><span className="text-[10px] font-bold">上一題</span></button>
                           <button onClick={() => { if (quizIndex < currentQuiz.length - 1) setQuizIndex(i => i + 1); else if (isMock) finishMockExam(); else if (isConfirmed) setActiveTab('quiz_summary'); }} disabled={!isMock && !isConfirmed && quizIndex === currentQuiz.length - 1} className={`p-3 rounded-full shadow-lg transition-transform hover:scale-110 flex flex-col items-center justify-center gap-1 ${(!isMock && !isConfirmed && quizIndex === currentQuiz.length - 1) ? 'bg-slate-200 text-slate-400' : `bg-${ThemeColor}-600 text-white hover:bg-${ThemeColor}-700`}`}><ChevronDown size={20} /><span className="text-[10px] font-bold">下一題</span></button>
                        </div>
-
                        <div className="max-w-3xl mx-auto mt-4 p-6 bg-white rounded-2xl shadow-xl border border-slate-100 animate-fade-in min-h-[60vh] flex flex-col relative">
                           <div className="flex justify-between mb-6">
                               <span className="text-xs font-bold text-slate-400 uppercase">Q {quizIndex + 1} / {currentQuiz.length} <span className={`ml-2 px-2 py-0.5 rounded text-xs ${q.level==='初級'?'bg-green-100 text-green-700':'bg-blue-100 text-blue-700'}`}>{q.level}</span> {isMulti && <span className="ml-1 px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">複選</span>}</span>
@@ -788,7 +778,6 @@
                                  const isSelected = isMulti 
                                      ? Array.isArray(userAnswer) && userAnswer.includes(opt)
                                      : userAnswer === opt;
-
                                  if (isMock || !isConfirmed) {
                                      style += isSelected ? `border-${ThemeColor}-600 bg-${ThemeColor}-50` : `border-slate-200 hover:border-${ThemeColor}-300 hover:bg-${ThemeColor}-50`;
                                  } else {
@@ -814,7 +803,6 @@
                           {!isMock && !isConfirmed && isMulti && (
                               <button onClick={() => submitAnswer(q, null)} className="w-full bg-slate-800 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-900 transition">確認送出</button>
                           )}
-
                           {(!isMock && isConfirmed) && (
                               <div className="animate-slide-up bg-slate-50 -mx-6 -mb-6 p-6 rounded-b-2xl border-t border-slate-200">
                                   <div className={`font-bold text-lg mb-2 ${checkIsCorrect(q, userAnswer)?'text-green-600':'text-red-500'}`}>{checkIsCorrect(q, userAnswer)?'答對':'答錯'}</div>
@@ -832,7 +820,6 @@
                      </div>
                    );
                 })()}
-
                 {activeTab === 'quiz_summary' && (
                   <div className="max-w-2xl mx-auto mt-10 animate-fade-in">
                       <div className="bg-white p-10 rounded-2xl shadow-xl text-center border border-slate-100 mb-6">
@@ -904,7 +891,6 @@
                         </div>
                     </div>
                 )}
-
                 <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
                     {helperOpen && (
                         <div className="mb-4 w-72 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden animate-slide-up">
@@ -935,7 +921,6 @@
                     )}
                     <button onClick={()=>setHelperOpen(!helperOpen)} className={`${helperOpen?'bg-slate-500':`bg-${ThemeColor}-600`} text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center justify-center`}>{helperOpen?<X size={24}/>:<MessageCircleQuestion size={28}/>}</button>
                 </div>
-
               </div>
             </div>
           );
