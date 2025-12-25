@@ -511,6 +511,7 @@
                 </div>
                 <div className="flex bg-slate-800 text-white p-1 overflow-x-auto shadow-md no-scrollbar justify-center">
                     <button onClick={() => handleNavChange('intro')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'intro' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><Info size={18} className="mr-2"/> 簡章</button>
+                    {/* Removed Add Tab Button */}
                     <button onClick={() => handleNavChange('bank')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'bank' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><BookOpen size={18} className="mr-2"/> 題庫</button>
                     <button onClick={() => handleNavChange('import')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'import' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><FolderOpen size={18} className="mr-2"/> 管理</button>
                     <button onClick={() => handleNavChange('ai_import')} className={`flex items-center px-4 py-3 text-sm font-medium transition whitespace-nowrap ${activeTab === 'ai_import' ? `bg-${ThemeColor}-600 text-white` : 'hover:bg-slate-700 text-slate-300'}`}><Bot size={18} className="mr-2"/> AI 匯入</button>
@@ -521,6 +522,7 @@
               </div>
 
               <div className="max-w-5xl mx-auto mt-6 px-3 sm:px-4">
+                {/* Intro Tab */}
                 {activeTab === 'intro' && (
                     <div className="animate-fade-in space-y-6 max-w-4xl mx-auto">
                         <div className="grid md:grid-cols-2 gap-6 items-start">
@@ -542,6 +544,7 @@
                     </div>
                 )}
 
+                {/* Bank Tab with Search & Filter */}
                 {activeTab === 'bank' && (
                    <div className="max-w-4xl mx-auto p-4 animate-fade-in">
                      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 sticky top-20 z-10">
@@ -581,6 +584,7 @@
                    </div>
                 )}
 
+                {/* Import Tab */}
                 {activeTab === 'import' && (
                    <div className="max-w-4xl mx-auto p-4 space-y-6 animate-fade-in">
                       <section className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -611,6 +615,7 @@
                    </div>
                 )}
 
+                {/* AI Import Tab */}
                 {activeTab === 'ai_import' && (
                     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg border border-slate-100 mt-6 animate-fade-in">
                         <h2 className="text-xl font-bold mb-4 text-slate-800 flex items-center"><Bot className="mr-2 text-purple-600"/> AI 快速匯入</h2>
@@ -645,6 +650,7 @@
                     </div>
                 )}
 
+                {/* Analysis Tab */}
                 {activeTab === 'analysis' && (
                     <div className="max-w-4xl mx-auto p-4 animate-fade-in space-y-6">
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -684,6 +690,7 @@
                     </div>
                 )}
 
+                {/* Quiz Prep Tab */}
                 {activeTab === 'quiz' && (
                    <div className="max-w-md mx-auto mt-10 p-8 bg-white rounded-2xl shadow-xl border border-slate-100 text-center animate-fade-in">
                       <h2 className="text-2xl font-bold mb-6 text-slate-800">測驗設定</h2>
@@ -909,11 +916,11 @@
                                 </div>
                                 <div className="space-y-1">
                                     <p className="font-bold text-slate-800 flex items-center"><Bot size={16} className="mr-1"/> 2. AI 快速匯入</p>
-                                    <p className="text-xs ml-5">提供中級/初級專屬指令，支援「複選題」與「情境題」生成。</p>
+                                    <p className="text-xs ml-5">使用 AI 快速生成符合 iPAS 考綱的試題。提供一鍵複製指令。</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="font-bold text-slate-800 flex items-center"><Play size={16} className="mr-1"/> 3. 開始測驗</p>
-                                    <p className="text-xs ml-5">新增「複選題」支援，需手動點擊「送出」才會計分。</p>
+                                    <p className="text-xs ml-5">可選擇「模擬考」模式進行倒數計時，或「錯題複習」加強弱點。</p>
                                 </div>
                                  <div className="space-y-1">
                                     <p className="font-bold text-slate-800 flex items-center"><BarChart2 size={16} className="mr-1"/> 4. 成效分析</p>
